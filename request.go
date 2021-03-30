@@ -27,6 +27,7 @@ type Requests struct {
 }
 
 func (this *Requests)Request (method,url string,data ...interface{}) (r *Response,err error)  {
+	method = strings.ToUpper(method)
 	response := &Response{}
 
 	start := time.Now().UnixNano() / 1e6
