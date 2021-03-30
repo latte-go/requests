@@ -106,7 +106,7 @@ func (this *Requests) SetCookies(cookies map[string]string) *Requests {
 			this.cookies[k] = v
 		}
 	}
-	return r
+	return this
 }
 
 // Init cookies
