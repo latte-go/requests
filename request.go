@@ -36,7 +36,7 @@ func (this *Requests)Request (method,url string,data ...interface{}) (r *Respons
 		return nil, errors.New("parameter method and url is required")
 	}
 
-	r.url = url
+	this.url = url
 	if len(data) > 0 {
 		this.data = data
 	}else {
@@ -55,7 +55,7 @@ func (this *Requests)Request (method,url string,data ...interface{}) (r *Respons
 		if err != nil{
 			return nil, err
 		}
-		r.url = url
+		this.url = url
 	}
 
 	body,err = this.buildBody(data...)
