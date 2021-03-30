@@ -58,6 +58,7 @@
 **Body() ([]byte,error)**
 
     body,err := resp.Body()
+    
     fmt.Println(string(body))
 
 **Close() error**
@@ -67,16 +68,21 @@
 **BodyText() (string error)**
 
     body,err := resp.BodyText()
+    
     fmt.Println(body)
 
 **BodyToMap()(map[string]interface{},error)**
 
     body,err := resp.BodyToMap()
+    
     fmt.Println(body)
 
 **BodyToStruct(v interface)(error)**
 
 type bodyStruct struct {}
+
 body := bodyStruct{}
+
 err := resp.BodyToMap(&body)
+
 fmt.Println(body)
