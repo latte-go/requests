@@ -79,10 +79,10 @@
 
 **BodyToStruct(v interface)(error)**
 
-type bodyStruct struct {}
+	type bodyStruct struct {}
 
-body := bodyStruct{}
+	body := bodyStruct{}
 
-err := resp.BodyToMap(&body)
+	err := resp.BodyToMap(&body)
 
-fmt.Println(body)
+	fmt.Println(body)
