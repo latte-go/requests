@@ -87,11 +87,6 @@ func (this *Requests)Get(url string,data interface{})  (response *Response,err e
 	return this.Request("get",url,data)
 }
 
-func (this *Requests)ResponseJson(data interface{})  {
-
-
-}
-
 func (this *Requests)elapsedTime(n int64,resp *Response){
 	end := time.Now().UnixNano()/1e6
 	resp.time = end - n
