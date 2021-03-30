@@ -1,4 +1,4 @@
-package httpRequest
+package requests
 
 func NewRequest() *Requests{
 	r := &Requests{
