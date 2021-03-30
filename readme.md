@@ -51,7 +51,7 @@
 
     resp, err := req.Post("http://127.0.0.1:8000/") //res is a http.Response object
 
-**StatusCode() int **
+**StatusCode() int**
 
     resp.StatusCode()
 
