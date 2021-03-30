@@ -68,6 +68,9 @@ func (this *Requests)Request (method,url string,data ...interface{}) (r *Respons
 		return nil, err
 	}
 
+	this.initHeaders(req)
+	this.initCookies(req)
+
 	resp,err := this.client.Do(req)
 	if err != nil{
 		return nil, err
@@ -78,6 +81,43 @@ func (this *Requests)Request (method,url string,data ...interface{}) (r *Respons
 	return response,nil
 }
 
+// Set headers
+func (this *Requests) SetHeaders(headers map[string]string) *Requests {
+	if headers != nil || len(headers) > 0 {
+		for k, v := range headers {
+			this.headers[k] = v
+		}
+	}
+	return this
+}
+
+// Init headers
+func (this *Requests) initHeaders(req *http.Request) {
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	for k, v := range this.headers {
+		req.Header.Set(k, v)
+	}
+}
+
+// Set cookies
+func (this *Requests) SetCookies(cookies map[string]string) *Requests {
+	if cookies != nil || len(cookies) > 0 {
+		for k, v := range cookies {
+			this.cookies[k] = v
+		}
+	}
+	return r
+}
+
+// Init cookies
+func (this *Requests) initCookies(req *http.Request) {
+	for k, v := range this.cookies {
+		req.AddCookie(&http.Cookie{
+			Name:  k,
+			Value: v,
+		})
+	}
+}
 
 func (this *Requests)Post(url string,data interface{}) (response *Response,err error) {
 	return  this.Request("post",url,data)
@@ -86,6 +126,7 @@ func (this *Requests)Post(url string,data interface{}) (response *Response,err e
 func (this *Requests)Get(url string,data interface{})  (response *Response,err error) {
 	return this.Request("get",url,data)
 }
+
 
 func (this *Requests)elapsedTime(n int64,resp *Response){
 	end := time.Now().UnixNano()/1e6
