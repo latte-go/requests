@@ -75,6 +75,7 @@
     fmt.Println(body)
 
 **BodyToStruct(v interface)(error)**
+
 type bodyStruct struct {}
 body := bodyStruct{}
 err := resp.BodyToMap(&body)
