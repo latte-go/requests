@@ -39,7 +39,7 @@ func (this *Requests)Request (method,url string,data ...interface{}) (r *Respons
 
 	this.url = url
 	if len(data) > 0 {
-		this.data = data
+		this.data = data[0]
 	}else {
 		this.data = ""
 	}
@@ -203,6 +203,61 @@ func (this *Requests) isJson() bool {
 	return false
 }
 
+func parseQuery(url string) ([]string, error) {
+	urlList := strings.Split(url, "?")
+	if len(urlList) < 2 {
+		return make([]string, 0), nil
+	}
+	query := make([]string, 0)
+	for _, val := range strings.Split(urlList[1], "&") {
+		v := strings.Split(val, "=")
+		if len(v) < 2 {
+			return make([]string, 0), errors.New("query parameter error")
+		}
+		query = append(query, fmt.Sprintf("%s=%s", v[0], v[1]))
+	}
+	return query, nil
+}
+
 func buildUrl(url string,data ...interface{}) (r string,err error){
-	return
+	query, err := parseQuery(url)
+	if err != nil {
+		return url, err
+	}
+
+	if len(data) > 0 && data[0] != nil {
+		t := reflect.TypeOf(data[0]).String()
+		switch t {
+		case "map[string]interface {}":
+			for k, v := range data[0].(map[string]interface{}) {
+				vv := ""
+				if reflect.TypeOf(v).String() == "string" {
+					vv = v.(string)
+				} else {
+					b, err := json.Marshal(v)
+					if err != nil {
+						return url, err
+					}
+					vv = string(b)
+				}
+				query = append(query, fmt.Sprintf("%s=%s", k, vv))
+			}
+		case "string":
+			param := data[0].(string)
+			if param != "" {
+				query = append(query, param)
+			}
+		default:
+			return url, errors.New("Unsupported data type.")
+		}
+
+	}
+
+	list := strings.Split(url, "?")
+
+	if len(query) > 0 {
+		return fmt.Sprintf("%s?%s", list[0], strings.Join(query, "&")), nil
+	}
+
+	return list[0], nil
 }
