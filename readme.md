@@ -51,13 +51,14 @@
 
     resp, err := req.Post("http://127.0.0.1:8000/") //res is a http.Response object
 
-**StatusCode() int **
+**StatusCode() int**
 
     resp.StatusCode()
 
 **Body() ([]byte,error)**
 
     body,err := resp.Body()
+    
     fmt.Println(string(body))
 
 **Close() error**
@@ -67,15 +68,21 @@
 **BodyText() (string error)**
 
     body,err := resp.BodyText()
+    
     fmt.Println(body)
 
 **BodyToMap()(map[string]interface{},error)**
 
     body,err := resp.BodyToMap()
+    
     fmt.Println(body)
 
 **BodyToStruct(v interface)(error)**
-type bodyStruct struct {}
-body := bodyStruct{}
-err := resp.BodyToMap(&body)
-fmt.Println(body)
+
+	type bodyStruct struct {}
+
+	body := bodyStruct{}
+
+	err := resp.BodyToMap(&body)
+
+	fmt.Println(body)
