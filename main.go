@@ -10,3 +10,8 @@ func NewRequest() *Requests {
 	}
 	return r
 }
+
+func SetTimeout(d time.Duration) *Requests {
+	r := NewRequest()
+	return r.SetTimeout(d)
+}

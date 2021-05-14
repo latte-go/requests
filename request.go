@@ -16,76 +16,76 @@ import (
 type REST_METHOD string
 
 type Requests struct {
-	client *http.Client
-	url string
-	data interface{}
+	client     *http.Client
+	url        string
+	data       interface{}
 	BodyBuffer *bytes.Buffer
-	err error
+	err        error
 
-	method string
-	timeout time.Duration
+	method            string
+	timeout           time.Duration
 	disableKeepAlives bool
 
-	headers map[string]string
-	cookies map[string]string
+	headers   map[string]string
+	cookies   map[string]string
 	transport *http.Transport
-	proxy func(r *http.Request)(*url.URL,error)
+	proxy     func(r *http.Request) (*url.URL, error)
 }
 
-func (this *Requests)Request (method,url string,data ...interface{}) (r *Response,err error)  {
+func (this *Requests) Request(method, url string, data ...interface{}) (r *Response, err error) {
 	method = strings.ToUpper(method)
 	response := &Response{}
 
 	start := time.Now().UnixNano() / 1e6
-	defer this.elapsedTime(start,response)
+	defer this.elapsedTime(start, response)
 
-	if method == "" || url == ""{
+	if method == "" || url == "" {
 		return nil, errors.New("parameter method and url is required")
 	}
 
 	this.url = url
 	if len(data) > 0 {
 		this.data = data[0]
-	}else {
+	} else {
 		this.data = ""
 	}
 
 	var (
 		req  *http.Request
-		body  io.Reader
+		body io.Reader
 	)
 	this.client = this.buildClient()
 	this.method = method
 
-	if method == "GET" || method == "DELETE"{
-		url,err = buildUrl(url,this.data)
-		if err != nil{
+	if method == "GET" || method == "DELETE" {
+		url, err = buildUrl(url, this.data)
+		if err != nil {
 			return nil, err
 		}
 		this.url = url
 	}
 
-	body,err = this.buildBody(data...)
-	if err != nil{
+	body, err = this.buildBody(data...)
+	if err != nil {
 		return nil, err
 	}
 
-	req,err = http.NewRequest(method,url,body)
-	if err != nil{
+	req, err = http.NewRequest(method, url, body)
+	if err != nil {
 		return nil, err
 	}
 
 	this.initHeaders(req)
 	this.initCookies(req)
 
-	resp,err := this.client.Do(req)
-	if err != nil{
+	resp, err := this.client.Do(req)
+	if err != nil {
 		return nil, err
 	}
 
 	response.url = url
 	response.resp = resp
-	return response,nil
+	return response, nil
 }
 
 func (this *Requests) DisableKeepAlives(v bool) *Requests {
@@ -131,48 +131,52 @@ func (this *Requests) initCookies(req *http.Request) {
 	}
 }
 
-func (this *Requests)SetPorxy(v func(r *http.Request)(*url.URL,error)) *Requests{
+func (this *Requests) SetPorxy(v func(r *http.Request) (*url.URL, error)) *Requests {
 	this.proxy = v
 	return this
 }
 
-func (this *Requests)Transport(v *http.Transport) *Requests{
+func (this *Requests) SetTimeout(d time.Duration) *Requests {
+	this.timeout = d
+	return this
+}
+
+func (this *Requests) Transport(v *http.Transport) *Requests {
 	this.transport = v
 	return this
 }
 
-func (this *Requests)getTransport() http.RoundTripper{
-	if this.transport == nil{
+func (this *Requests) getTransport() http.RoundTripper {
+	if this.transport == nil {
 		return http.DefaultTransport
 	}
 
 	this.transport.DisableKeepAlives = this.disableKeepAlives
 
-	if this.proxy != nil{
+	if this.proxy != nil {
 		this.transport.Proxy = this.proxy
 	}
 
 	return http.RoundTripper(this.transport)
 }
 
-func (this *Requests)Post(url string,data interface{}) (response *Response,err error) {
-	return  this.Request("post",url,data)
+func (this *Requests) Post(url string, data interface{}) (response *Response, err error) {
+	return this.Request("post", url, data)
 }
 
-func (this *Requests)Get(url string,data interface{})  (response *Response,err error) {
-	return this.Request("get",url,data)
+func (this *Requests) Get(url string, data interface{}) (response *Response, err error) {
+	return this.Request("get", url, data)
 }
 
-
-func (this *Requests)elapsedTime(n int64,resp *Response){
-	end := time.Now().UnixNano()/1e6
+func (this *Requests) elapsedTime(n int64, resp *Response) {
+	end := time.Now().UnixNano() / 1e6
 	resp.time = end - n
 }
 
-func (this *Requests)buildClient() *http.Client{
-	if this.client == nil{
+func (this *Requests) buildClient() *http.Client {
+	if this.client == nil {
 		this.client = &http.Client{
-			Timeout: time.Second * this.timeout,
+			Timeout:   time.Second * this.timeout,
 			Transport: this.getTransport(),
 		}
 	}
@@ -255,7 +259,7 @@ func parseQuery(url string) ([]string, error) {
 	return query, nil
 }
 
-func buildUrl(url string,data ...interface{}) (r string,err error){
+func buildUrl(url string, data ...interface{}) (r string, err error) {
 	query, err := parseQuery(url)
 	if err != nil {
 		return url, err
