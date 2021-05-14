@@ -1,8 +1,10 @@
 package requests
 
-func NewRequest() *Requests{
+import "time"
+
+func NewRequest() *Requests {
 	r := &Requests{
-		timeout: 30,
+		timeout: time.Second * 300,
 		headers: map[string]string{},
 		cookies: map[string]string{},
 	}
